@@ -2,10 +2,6 @@ import mongoose from "mongoose";
 import express from "express";
 import bodyParser from "body-parser"
 const dotenv = require("dotenv")
-
-import user from "./mongoose/user";
-import group from "./mongoose/group";
-import userGroup from "./mongoose/userGroup";
 import passport from "passport";
 import loginRoutes from "./routes/login"
 import userRoutes from "./routes/user"

@@ -1,8 +1,7 @@
 import passport from "passport"
 import * as localStrategy from "passport-local"
-// import Strategy from "passport-local"
-// const localStrategy = Strategy.Strategy
 import * as jwtStrategy from "passport-jwt"
+import * as GoogleStrategy from "passport-google-oauth"
 import * as bcrypt from "bcrypt"
 import user from "../mongoose/user"
 import userGroup from "../mongoose/userGroup"
@@ -58,3 +57,33 @@ passport.use(
         }
     )
 )
+
+passport.use(
+    new GoogleStrategy.OAuth2Strategy(
+        {
+            callbackURL: "/google/callback",
+            clientID: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        },
+        async (accessToken: any, refreshToken: any, profile: any, done: any) => {
+            // console.log("user profile is: ", profile);
+            const googleID = profile.id;
+            const name = profile.displayName;
+            const existingUser = await user.find({ "googleID": googleID })
+            console.log("USER: ", existingUser)
+            if (existingUser.length = 0) {
+                console.log("This is existing")
+                return done(existingUser)
+            } else {
+                console.log("This is create")
+                const newUser = await user.create({
+                    email: profile.emails[0].value,
+                    googleID: googleID,
+                    name: name
+                });
+                return done(newUser)
+
+            }
+        }
+    )
+);
